@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".ScanAddress">
+
+    <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" tools:layout_editor_absoluteY="181dp"
+            tools:layout_editor_absoluteX="16dp">
+        <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+            <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    tools:ignore="MissingConstraints">
+                <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+                    <Space
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" android:layout_weight="1"/>
+                    <TextView
+                            android:text="Read NFC/QR Wallet"
+                            android:textStyle="bold"
+                            android:textSize="30dp"
+
+                            android:layout_gravity="center"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" android:id="@+id/textView3"/>
+                    <Space
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" android:layout_weight="1"/>
+                </LinearLayout>
+                <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                >
+                    <Space
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" android:layout_weight="60"/>
+                    <LinearLayout
+                            android:orientation="vertical"
+                            android:layout_width="56dp"
+                            android:layout_height="match_parent" android:layout_weight="60">
+                        <Space
+                                android:layout_width="144dp"
+                                android:layout_height="wrap_content" android:layout_weight="60"/>
+                        <Button
+                                android:text="ZCash"
+                                android:layout_width="wrap_content"
+                                android:layout_height="30dp"
+                                android:id="@+id/SwitchBZ"
+                                android:layout_gravity="center"
+                                android:layout_weight="40"
+                        />
+                        <Space
+                                android:layout_width="148dp"
+                                android:layout_height="wrap_content" android:layout_weight="60"/>
+                    </LinearLayout>
+                    <ImageView
+                            android:layout_width="80dp"
+                            android:layout_height="80dp" app:srcCompat="@drawable/zcash"
+                            android:id="@+id/imageView3" android:layout_weight="10"
+                            android:gravity="left"
+
+                    />
+                    <Space
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" android:layout_weight="60"/>
+                </LinearLayout>
+                <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+                    <Space
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" android:layout_weight="1"/>
+                    <Button
+                            android:text="scan QR Code"
+                            android:layout_width="150dp"
+                            android:layout_height="wrap_content" android:id="@+id/button3"/>
+                    <Button
+                            android:text="scan nfc Wallet"
+                            android:layout_width="150dp"
+                            android:layout_height="wrap_content" android:id="@+id/button2"/>
+                    <Space
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" android:layout_weight="1"/>
+                </LinearLayout>
+                <EditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textPersonName"
+                        android:ems="10"
+                        tools:layout_editor_absoluteY="219dp" tools:layout_editor_absoluteX="57dp"
+                        android:id="@+id/eAdd" android:contentDescription="public address"/>
+                <Button
+                        android:text="show balance"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:id="@+id/bButton"/>
+                <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+                    <TextView
+                            android:text="Wallet Name:"
+                            android:layout_width="285dp"
+                            android:layout_height="wrap_content"
+                            android:textSize="20dp"
+                            android:id="@+id/textView" android:layout_weight="1"/>
+                    <ScrollView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" android:layout_weight="1">
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                                      android:orientation="vertical">
+                            <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content" android:id="@+id/displayedName"
+                                    android:textSize="20dp"
+                                    tools:layout_editor_absoluteY="356dp"
+                                    tools:layout_editor_absoluteX="176dp"/>
+                        </LinearLayout>
+                    </ScrollView>
+                </LinearLayout>
+                <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+                    <TextView
+                            android:text="Balance:"
+                            android:layout_width="205dp"
+                            android:layout_height="wrap_content"
+                            android:textSize="20dp"
+                            android:id="@+id/textView2" android:layout_weight="1"/>
+                    <ScrollView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" android:layout_weight="1">
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                                      android:orientation="vertical">
+                            <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent" android:id="@+id/balance"
+                                    android:textSize="23dp"
+                                    android:gravity="center"
+                                    android:textStyle="bold"
+                                    android:textColor="@color/balance_color"
+                            />
+                        </LinearLayout>
+                    </ScrollView>
+                </LinearLayout>
+                <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="242dp" app:srcCompat="@color/zxing_status_text"
+                        android:id="@+id/iv_barcode"/>
+                <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+                    <Space
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" android:layout_weight="1"/>
+                    <TextView
+                            android:text=""
+                            android:layout_width="wrap_content"
+                            android:textSize="20dp"
+                            android:textAlignment="center"
+                            android:layout_gravity="center"
+                            android:layout_height="wrap_content" android:id="@+id/TextAddresse"/>
+                    <Space
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" android:layout_weight="1"/>
+                </LinearLayout>
+                <Button
+                        android:text="GET PRIVATE KEY"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:id="@+id/getPrivateKey"
+                        android:visibility="visible"/>
+                <EditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textPersonName"
+                        android:ems="10"
+                        android:id="@+id/editTextPrivateKEy" android:hint="don't show it to anyone"/>
+            </LinearLayout>
+        </ScrollView>
+    </LinearLayout>
+</android.support.constraint.ConstraintLayout>
