@@ -64,6 +64,9 @@ class ScanAddress : AppCompatActivity() {
 
 
     }
+
+
+
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -136,13 +139,20 @@ class ScanAddress : AppCompatActivity() {
         }
 */
 
-        switchCoin.setOnClickListener{
-            if(Info.coin == "zcash"){
-                Info.coin = "bitcoin"
-                coinImage.setImageResource(R.drawable.bitcoin)}
-            else{Info.coin = "zcash"
-                coinImage.setImageResource(R.drawable.zcash)}
+        switchCoin.setOnClickListener {
 
+            when (Info.coin) {
+                "bitcoin" -> {Info.coin = "zcash"
+                              coinImage.setImageResource(R.drawable.zcash)}
+                "zcash" -> { Info.coin = "ethereum"
+                             coinImage.setImageResource(R.drawable.ethereum)}
+                "ethereum" -> { Info.coin = "bitcoin"
+                                coinImage.setImageResource(R.drawable.bitcoin)}
+            }
+
+
+            Info.nfcUse = "read-fast" //Preis wird nicht neu gecheckt
+            showBalance()
             switchCoin.text = Info.coin
 
         }
@@ -171,6 +181,10 @@ class ScanAddress : AppCompatActivity() {
 
                 startActivity(intent)
                 finish()
+                if(Info.QRscanned != ""){
+                    eaddress.text = Info.QRscanned
+                    Info.QRscanned = ""
+                }
             }
         }
 
@@ -229,34 +243,47 @@ class ScanAddress : AppCompatActivity() {
             Info.QRscanned = ""
         }
 
-        if(Info.coin == "zcash"){
-            switchCoin.text = "zcash"
-            coinImage.setImageResource(R.drawable.zcash)}
-        else{switchCoin.text = "bitcoin"
-            coinImage.setImageResource(R.drawable.bitcoin)}
+        when (Info.coin) {
+            "bitcoin" -> {Info.coin = "bitcoin"
+                coinImage.setImageResource(R.drawable.bitcoin)}
+            "zcash" -> { Info.coin = "zcash"
+                coinImage.setImageResource(R.drawable.zcash)}
+            "ethereum" -> { Info.coin = "ethereum"
+                coinImage.setImageResource(R.drawable.ethereum)}
+        }
     }
 
 
     fun showBalance(){
-        if(Info.nfcUse == "read"){
+        if(Info.nfcUse == "read" ||Info.nfcUse == "read-fast"){
         if (!eaddress.text.toString().contains(" ") && eaddress.text.toString() != "") {
             println(Info.QRscanned)
             val eURL = eaddress.text
 
 
-            getBalanceInfo(eURL.toString(),Info.coin)
+                getBalanceInfo(eURL.toString(), Info.coin)
+
             // balanceInfo("https://api.zcha.in/v2/mainnet/accounts/" + eURL)
             getPrice(Info.coin)
 
-            TimeUnit.MILLISECONDS.sleep(2000L)
+            if(Info.nfcUse == "read") {
+                TimeUnit.MILLISECONDS.sleep(2000L)
+            }
             textaddress.text = Info.nfcPass
             val pbalance = "%.5f".format(Info.balance)
-            val pUSDWertB = "%.2f".format(Info.bitcoinPrice * Info.balance)
-            val pUSDWertZ = "%.2f".format(Info.zcashPrice * Info.balance)
+            Coins.bitcoin.usdWert = "%.2f".format(Coins.bitcoin.lastPrice * Coins.bitcoin.lastBalance)
+            Coins.zcash.usdWert = "%.2f".format(Coins.zcash.lastPrice * Coins.zcash.lastBalance)
+            Coins.ethereum.usdWert = "%.2f".format(Coins.ethereum.lastPrice * Coins.ethereum.lastBalance)
+
+
+
+            // Displaying the Balance and Worth
 
             when (Info.coin) {
-                "bitcoin" -> balance.text = "$pbalance ($pUSDWertB $)"
-                "zcash" -> balance.text = "$pbalance ($pUSDWertZ $)"
+                "bitcoin" -> balance.text = "${Coins.bitcoin.lastBalance} (${Coins.bitcoin.usdWert} $)"
+                "zcash" -> balance.text = "${Coins.zcash.lastBalance} (${Coins.zcash.usdWert} $)"
+                "ethereum" -> balance.text = "${Coins.ethereum.lastBalance} (${Coins.ethereum.usdWert} $)"
+
             }
 
 
@@ -287,7 +314,7 @@ class ScanAddress : AppCompatActivity() {
                         updateData()
 
                         if(Info.nfcText != ""){
-                            Info.address = Info.nfcText
+                            Coins.methoden.setAddress(Info.nfcCoin,Info.nfcText)
                             eaddress.text = Info.nfcText
                             Info.coin = Info.nfcCoin
                             Info.nfcCoin = ""
@@ -327,6 +354,8 @@ private fun processIntent(checkIntent: Intent) {
 
 
 class AddressInfo(var address:String,var balance:Double,var sentCount:Int, var recvCount:Int,var addrStr:String,var unconfirmedBalance:Double)
+
+
 fun getBalanceInfo(purl :String,pCoin:String){
     println("Fetch JSON Versuch")
 
@@ -335,6 +364,7 @@ fun getBalanceInfo(purl :String,pCoin:String){
     when(pCoin){
         "bitcoin" -> url = "https://blockexplorer.com/api/addr/$purl"
         "zcash" -> url = "https://api.zcha.in/v2/mainnet/accounts/$purl"
+        "ethereum" -> url ="https://api.etherscan.io/api?module=account&action=balance&address=$url"
     }
 
 
@@ -351,17 +381,19 @@ fun getBalanceInfo(purl :String,pCoin:String){
             val addressInfo = gson.fromJson(body,AddressInfo::class.java)
 
             when(pCoin){
-                "bitcoin" -> {  ScanAddress.Info.balance = addressInfo.balance
-                                ScanAddress.Info.address = addressInfo.addrStr}
-                "zcash"   -> {  ScanAddress.Info.address = addressInfo.address
-                                ScanAddress.Info.balance = addressInfo.balance
-                                ScanAddress.Info.recvCount = addressInfo.recvCount
-                                ScanAddress.Info.sentCount = addressInfo.sentCount}
+                "bitcoin" -> {  Coins.bitcoin.lastBalance = addressInfo.balance
+                                Coins.bitcoin.address = addressInfo.addrStr}
+                "zcash"   -> {  Coins.zcash.address = addressInfo.address
+                                Coins.zcash.lastBalance = addressInfo.balance
+                                Coins.zcash.recvCount = addressInfo.recvCount
+                                Coins.zcash.sentCount = addressInfo.sentCount}
+                "ethereum" -> { Coins.ethereum.lastBalance = addressInfo.balance/1000000000000000000
+                                Coins.ethereum.address = url}
             }
 
         }else{
-                ScanAddress.Info.balance = 0.0
-                ScanAddress.Info.address = "invalid Address"
+                Coins.methoden.invalidAddress(pCoin)
+
             }
         }
         override fun onFailure(call: Call, e: IOException) {
@@ -371,22 +403,22 @@ fun getBalanceInfo(purl :String,pCoin:String){
 
     }else{
         println("getBalance failed")
-        ScanAddress.Info.address = "invalide Address"
-        ScanAddress.Info.balance = 0.0
+        Coins.methoden.invalidAddress(pCoin)
+
     }
 }
 class Coin(var usd:Double)
-class PriceInfo(var zcash:Coin,var bitcoin:Coin)
+class PriceInfo(var zcash:Coin,var bitcoin:Coin, var ethereum:Coin)
 fun getPrice(pCoin:String){
 
     if(pCoin == "bitcoin" || pCoin == "zcash"){
     var url = ""
-    if(pCoin == "bitcoin") {
-        url = "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=USD"
-    }
-    if(pCoin == "zcash"){
-        url = "https://api.coingecko.com/api/v3/simple/price?ids=zcash&vs_currencies=USD"
-    }
+
+        when (pCoin) {
+            "bitcoin" -> url = Coins.bitcoin.priceAddress
+            "zcash" -> url = Coins.zcash.priceAddress
+            "ethereum" -> url = Coins.ethereum.priceAddress
+        }
 
 
     val request = Request.Builder().url(url).build()
@@ -400,11 +432,13 @@ fun getPrice(pCoin:String){
             val pInfo = gson.fromJson(body,PriceInfo::class.java)
 
             if(pCoin == "bitcoin"){
-                ScanAddress.Info.bitcoinPrice = pInfo.bitcoin.usd}
+                Coins.bitcoin.lastPrice = pInfo.bitcoin.usd}
             if(pCoin == "zcash"){
-                ScanAddress.Info.zcashPrice = pInfo.zcash.usd}
+                Coins.zcash.lastPrice = pInfo.zcash.usd}
+            if(pCoin == "ethereum"){
+                Coins.ethereum.lastPrice = pInfo.ethereum.usd}
 
-            println("zcash price:${ScanAddress.Info.zcashPrice}, bitcoin price:${ScanAddress.Info.bitcoinPrice}, balance: ${ScanAddress.Info.balance}")
+            println("zcash price:${Coins.bitcoin.lastPrice}, bitcoin price:${Coins.zcash.lastPrice}, balance: ${Coins.bitcoin.lastBalance},${Coins.zcash.lastBalance} ")
         }
         override fun onFailure(call: Call, e: IOException) {
 
@@ -414,8 +448,8 @@ fun getPrice(pCoin:String){
 
 }else{
         println("getPrice failed")
-        ScanAddress.Info.address = "invalide Address"
-        ScanAddress.Info.balance = 0.0
+        Coins.methoden.invalidAddress(pCoin)
+
     }}
 
 
