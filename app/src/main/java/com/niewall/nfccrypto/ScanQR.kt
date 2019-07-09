@@ -48,10 +48,10 @@ class ScanQR : AppCompatActivity() {
             runOnUiThread {
                 Toast.makeText(this, "Scan result: ${it.text}", Toast.LENGTH_LONG).show()
             }
-            ScanAddress.Info.QRscanned = it.text.toString()
-            val intent = Intent(this@ScanQR, ScanAddress::class.java)
-            startActivity(intent)
+            Info.QRscanned = it.text.toString()
+            print(it.text.toString())
             finish()
+            return@DecodeCallback
         }
         codeScanner.errorCallback = ErrorCallback { // or ErrorCallback.SUPPRESS
             runOnUiThread {

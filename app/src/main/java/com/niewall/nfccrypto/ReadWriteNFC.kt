@@ -62,7 +62,7 @@ class ReadWriteNFC : AppCompatActivity() {
         message =  findViewById(R.id.edit_message)
         val btnWrite =  findViewById<Button>(R.id.buttonWrite)
 
-        when(ScanAddress.Info.nfcUse){
+        when(Info.nfcUse){
             "read" -> println("read")
             "write" -> {
                 println("write")
@@ -77,7 +77,7 @@ class ReadWriteNFC : AppCompatActivity() {
                         //write(message.text.toString(), myTag!!)
                         println(myTag)
 
-                        write(ScanAddress.Info.nfctextToWrite, myTag)
+                        write(Info.nfctextToWrite, myTag)
                         Toast.makeText(context, WRITE_SUCCESS, Toast.LENGTH_LONG).show()
 
                     }
@@ -88,7 +88,7 @@ class ReadWriteNFC : AppCompatActivity() {
                     Toast.makeText(context, WRITE_ERROR, Toast.LENGTH_LONG).show()
                     e.printStackTrace()
                 }
-                ScanAddress.Info.nfcUse = ""
+                Info.nfcUse = ""
                 finish()
             }
             "" -> finish()
@@ -105,7 +105,7 @@ class ReadWriteNFC : AppCompatActivity() {
                     } else {
                         //write(message.text.toString(), myTag!!)
                         println(myTag)
-                        ScanAddress.Info.nfctextToWrite = message.text.toString()
+                        Info.nfctextToWrite = message.text.toString()
                         Toast.makeText(context, WRITE_SUCCESS, Toast.LENGTH_LONG).show()
 
                     }
@@ -132,11 +132,11 @@ class ReadWriteNFC : AppCompatActivity() {
         tagDetected.addCategory(Intent.CATEGORY_DEFAULT)
         writeTagFilters = arrayOf(tagDetected)
 
-        tvNFCContent.text = ScanAddress.Info.nfcText
+        tvNFCContent.text = Info.nfcText
 
     }
     private fun readFromIntent(intent:Intent){
-        if(ScanAddress.Info.nfcUse == "read"){
+        if(Info.nfcUse == "read"){
         val action = intent.action
         if (NfcAdapter.ACTION_TAG_DISCOVERED == action
             || NfcAdapter.ACTION_TECH_DISCOVERED == action
@@ -179,29 +179,29 @@ class ReadWriteNFC : AppCompatActivity() {
 
         for(counter in 0 until text.length){
         if(text[counter] == '#' && counter2 == 0){
-            ScanAddress.Info.nfcText = text.subSequence(0,counter).toString()
+            Info.nfcText = text.subSequence(0,counter).toString()
             start = counter+1
             counter2++
         }else if(text[counter] == '#' && counter2 ==1){
-            ScanAddress.Info.nfcPass = text.subSequence(start,counter).toString()
+            Info.nfcPass = text.subSequence(start,counter).toString()
             start = counter+1
             counter2++
         }else if(text[counter] == '#' && counter2 ==2){
-            ScanAddress.Info.nfcPriKey = text.subSequence(start,counter).toString()
+            Info.nfcPriKey = text.subSequence(start,counter).toString()
             start = counter+1
             counter2++
         }
 
         }
 
-        ScanAddress.Info.nfcCoin = text.subSequence(start,text.length-1).toString() + text[text.length-1]
+        Info.nfcCoin = text.subSequence(start,text.length-1).toString() + text[text.length-1]
 
-        println(ScanAddress.Info.nfcText)
-        println(ScanAddress.Info.nfcPass)
-        println(ScanAddress.Info.nfcPriKey)
-        println(ScanAddress.Info.nfcCoin)
+        println(Info.nfcText)
+        println(Info.nfcPass)
+        println(Info.nfcPriKey)
+        println(Info.nfcCoin)
 
-        //ScanAddress.Info.nfcText = text
+        //Info.nfcText = text
 
         finish()
 

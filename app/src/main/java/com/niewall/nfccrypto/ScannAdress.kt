@@ -28,6 +28,25 @@ import java.lang.Exception
 import java.security.AccessController.getContext
 import java.util.concurrent.TimeUnit
 
+object Info {
+    var address = ""
+    var balance = 0.0
+    var sentCount = 0
+    var recvCount = 0
+    var zcashPrice = 0.0
+    var bitcoinPrice = 0.0
+    var QRscanned = ""
+    var coin = "zcash"
+    var nfcText = ""
+    var nfcPass = "nichts"
+    var nfcPriKey = "nichts"
+    var nfcCoin = ""
+    var nfctextToWrite = ""
+    var nfcUse = ""
+
+
+}
+
 
 @SuppressLint("SetTextI18n")
 class ScanAddress : AppCompatActivity() {
@@ -46,24 +65,6 @@ class ScanAddress : AppCompatActivity() {
 
 
 
-    object Info {
-        var address = ""
-        var balance = 0.0
-        var sentCount = 0
-        var recvCount = 0
-        var zcashPrice = 0.0
-        var bitcoinPrice = 0.0
-        var QRscanned = ""
-        var coin = "zcash"
-        var nfcText = ""
-        var nfcPass = "nichts"
-        var nfcPriKey = "nichts"
-        var nfcCoin = ""
-        var nfctextToWrite = ""
-        var nfcUse = ""
-
-
-    }
 
 
 
@@ -102,7 +103,7 @@ class ScanAddress : AppCompatActivity() {
         }
 
 
-
+        eaddress.text = Info.QRscanned
         updateData()
 
 
@@ -176,15 +177,14 @@ class ScanAddress : AppCompatActivity() {
                 //start your camera
             } else {
 
-
+                eaddress.text = ""
+                Info.QRscanned = ""
                 val intent = Intent(this@ScanAddress, ScanQR::class.java)
 
                 startActivity(intent)
-                finish()
-                if(Info.QRscanned != ""){
-                    eaddress.text = Info.QRscanned
-                    Info.QRscanned = ""
-                }
+
+                eaddress.text = Info.QRscanned
+
             }
         }
 
@@ -235,6 +235,8 @@ class ScanAddress : AppCompatActivity() {
 
     private fun updateData(){
 
+        println("QR Scanned: " + Info.QRscanned)
+
         if (Info.QRscanned != ""){
             eaddress.text = Info.QRscanned
             Info.nfcUse="read"
@@ -243,9 +245,12 @@ class ScanAddress : AppCompatActivity() {
             Info.QRscanned = ""
         }
 
+
+        switchCoin.text = Info.coin
         when (Info.coin) {
             "bitcoin" -> {Info.coin = "bitcoin"
-                coinImage.setImageResource(R.drawable.bitcoin)}
+                coinImage.setImageResource(R.drawable.bitcoin)
+                }
             "zcash" -> { Info.coin = "zcash"
                 coinImage.setImageResource(R.drawable.zcash)}
             "ethereum" -> { Info.coin = "ethereum"
@@ -255,10 +260,13 @@ class ScanAddress : AppCompatActivity() {
 
 
     fun showBalance(){
+
         if(Info.nfcUse == "read" ||Info.nfcUse == "read-fast"){
         if (!eaddress.text.toString().contains(" ") && eaddress.text.toString() != "") {
             println(Info.QRscanned)
-            val eURL = eaddress.text
+            val eURL = eaddress.text.toString()
+            textaddress.text = eaddress.text
+
 
 
                 getBalanceInfo(eURL.toString(), Info.coin)
@@ -267,9 +275,8 @@ class ScanAddress : AppCompatActivity() {
             getPrice(Info.coin)
 
             if(Info.nfcUse == "read") {
-                TimeUnit.MILLISECONDS.sleep(2000L)
+                TimeUnit.MILLISECONDS.sleep(3000L)
             }
-            textaddress.text = Info.nfcPass
             val pbalance = "%.5f".format(Info.balance)
             Coins.bitcoin.usdWert = "%.2f".format(Coins.bitcoin.lastPrice * Coins.bitcoin.lastBalance)
             Coins.zcash.usdWert = "%.2f".format(Coins.zcash.lastPrice * Coins.zcash.lastBalance)
@@ -353,18 +360,18 @@ private fun processIntent(checkIntent: Intent) {
 
 
 
-class AddressInfo(var address:String,var balance:Double,var sentCount:Int, var recvCount:Int,var addrStr:String,var unconfirmedBalance:Double)
+class AddressInfo(var address:String,var balance:Double,var sentCount:Int, var recvCount:Int,var addrStr:String,var result:String)
 
 
 fun getBalanceInfo(purl :String,pCoin:String){
     println("Fetch JSON Versuch")
 
-    if(pCoin == "btcoin" || pCoin == "zcash"){
+    if(pCoin == "bitcoin" || pCoin == "zcash"|| pCoin == "ethereum"){
     var url = ""
     when(pCoin){
         "bitcoin" -> url = "https://blockexplorer.com/api/addr/$purl"
         "zcash" -> url = "https://api.zcha.in/v2/mainnet/accounts/$purl"
-        "ethereum" -> url ="https://api.etherscan.io/api?module=account&action=balance&address=$url"
+        "ethereum" -> url ="https://api.etherscan.io/api?module=account&action=balance&address=$purl"
     }
 
 
@@ -379,6 +386,7 @@ fun getBalanceInfo(purl :String,pCoin:String){
             if(!body.toString().contains(' ')&& body != ""){
             val gson = GsonBuilder().create()
             val addressInfo = gson.fromJson(body,AddressInfo::class.java)
+                println(addressInfo)
 
             when(pCoin){
                 "bitcoin" -> {  Coins.bitcoin.lastBalance = addressInfo.balance
@@ -387,7 +395,7 @@ fun getBalanceInfo(purl :String,pCoin:String){
                                 Coins.zcash.lastBalance = addressInfo.balance
                                 Coins.zcash.recvCount = addressInfo.recvCount
                                 Coins.zcash.sentCount = addressInfo.sentCount}
-                "ethereum" -> { Coins.ethereum.lastBalance = addressInfo.balance/1000000000000000000
+                "ethereum" -> { Coins.ethereum.lastBalance = addressInfo.result.toDouble()/1000000000000000000
                                 Coins.ethereum.address = url}
             }
 
@@ -411,7 +419,7 @@ class Coin(var usd:Double)
 class PriceInfo(var zcash:Coin,var bitcoin:Coin, var ethereum:Coin)
 fun getPrice(pCoin:String){
 
-    if(pCoin == "bitcoin" || pCoin == "zcash"){
+    if(pCoin == "bitcoin" || pCoin == "zcash" || pCoin == "ethereum"){
     var url = ""
 
         when (pCoin) {

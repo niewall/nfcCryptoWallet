@@ -38,8 +38,8 @@ class WriteActivity : AppCompatActivity() {
 
             var text = "${address.text}#${walletname.text}#${privatekey.text}#${dropdown.selectedItem.toString()}"
 
-            ScanAddress.Info.nfctextToWrite = text
-            ScanAddress.Info.nfcUse = "write"
+            Info.nfctextToWrite = text
+            Info.nfcUse = "write"
 
             mDialogView = LayoutInflater.from(this).inflate(R.layout.dialog, null)
             //AlertDialogBuilder
@@ -49,7 +49,7 @@ class WriteActivity : AppCompatActivity() {
                 .setTitle("Please tap Tag")
             //show dialog
             mAlertDialog = mBuilder.show()
-            if(ScanAddress.Info.coin == "zcash"){
+            if(Info.coin == "zcash"){
                 mDialogView.image.setImageResource(R.drawable.zcash)}
             else{mDialogView.image.setImageResource(R.drawable.bitcoin)}
 
