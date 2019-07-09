@@ -53,7 +53,7 @@ class ReadWriteNFC : AppCompatActivity() {
         }
 
 
-        if(ScanAddress.Info.nfcUse == ""){
+        if(Info.nfcUse == ""){
             finish()
         }
 
