@@ -13,3 +13,5 @@ in front of it. Thats quiet cool, isn't it?
 
 
 At the moment the code is very messi and there are code snippets and date that isn't used. I'am not an native english speaker, so some comments (from which there are way to few) are in german.
+
+Link to test APK V1.2: https://drive.google.com/file/d/1WcY4Aafo0ZD8x4vkM4g7kZtA_XUp5vQF/view?usp=sharing
